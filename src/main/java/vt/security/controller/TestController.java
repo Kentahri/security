@@ -13,7 +13,6 @@ public class TestController {
         return "USER profile - authenticated";
     }
 
-    // Chỉ ROLE_USER
     @PreAuthorize("hasRole('USER')")
     @GetMapping("/api/user/only")
     public String onlyUser() {
@@ -21,7 +20,6 @@ public class TestController {
     }
 
     // Chỉ ROLE_ADMIN
-    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/api/admin/only")
     public String onlyAdmin() {
         return "Only ADMIN can access";
