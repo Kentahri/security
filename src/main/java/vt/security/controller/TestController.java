@@ -7,8 +7,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class TestController {
 
+    // Công khai, không cần xác thực
+    @GetMapping("/public")
+    public String publicEndpoint() {
+        return "Public endpoint - no authentication required";
+    }
+
     // Chỉ cần đăng nhập (token hợp lệ)
-    @GetMapping("/api/user/profile")
+    @GetMapping("/api/profile")
     public String userProfile() {
         return "USER profile - authenticated";
     }

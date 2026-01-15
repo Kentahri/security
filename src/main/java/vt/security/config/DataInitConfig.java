@@ -45,6 +45,11 @@ public class DataInitConfig implements CommandLineRunner {
         );
 
         // ===== Role =====
+        Role roleNormal = new Role();
+        roleNormal.setName("ROLE_NORMAL");
+        roleNormal.setPermissions(Set.of());
+        roleRepository.save(roleNormal);
+
         Role roleUser = new Role();
         roleUser.setName("ROLE_USER");
         roleUser.setPermissions(Set.of(userRead));
@@ -56,6 +61,13 @@ public class DataInitConfig implements CommandLineRunner {
         roleRepository.save(roleAdmin);
 
         // ===== User =====
+        User normal = new User();
+        normal.setUsername("normal");
+        normal.setPassword(passwordEncoder.encode("123456"));
+        normal.setEnabled(true);
+        normal.setRoles(Set.of(roleNormal));
+        userRepository.save(normal);
+
         User user = new User();
         user.setUsername("user");
         user.setPassword(passwordEncoder.encode("123456"));
