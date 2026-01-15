@@ -33,7 +33,6 @@ public class CustomUserDetailsService implements UserDetailsService {
         return new UserPrincipal(
                 user,
                 Stream.concat(
-                        // ✅ BỎ "ROLE_" vì database đã có sẵn
                         user.getRoles().stream()
                                 .map(r -> new SimpleGrantedAuthority(r.getName())),  // Chỉ lấy tên
 
