@@ -39,7 +39,6 @@ public class JwtFilter extends OncePerRequestFilter {
                 || path.equals("/register");
     }
 
-
     @Override
     protected void doFilterInternal(
             HttpServletRequest request,
@@ -53,9 +52,11 @@ public class JwtFilter extends OncePerRequestFilter {
 
             String token = authHeader.substring(7);
 
-            // 🔥 CHECK BLACKLIST – ĐẶT Ở ĐÂY
+            // Check blacklist
             if (tokenBlacklistService.isBlacklisted(token)) {
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.setContentType("application/json");
+                response.getWriter().write("{\"error\": \"Token has been revoked\"}");
                 return;
             }
 

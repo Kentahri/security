@@ -5,7 +5,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
-import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -16,13 +15,15 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
 
     private final JwtFilter jwtFilter;
+    private final DynamicAuthorizationFilter authorizationFilter;
 
-    public SecurityConfig(JwtFilter jwtFilter) {
+    public SecurityConfig(JwtFilter jwtFilter,
+                          DynamicAuthorizationFilter authorizationFilter) {
         this.jwtFilter = jwtFilter;
+        this.authorizationFilter = authorizationFilter;
     }
 
     @Bean
@@ -35,12 +36,29 @@ public class SecurityConfig {
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests(auth -> auth
+                        // Public endpoints
                         .requestMatchers(HttpMethod.POST, "/login", "/register").permitAll()
+                        .requestMatchers("/public/**").permitAll()
+
+                        // H2 Console (chỉ cho development)
+                        .requestMatchers("/h2-console/**").permitAll()
+
+                        // Tất cả endpoints khác cần authenticated
+                        // Authorization (permission check) sẽ được xử lý bởi DynamicAuthorizationFilter
                         .anyRequest().authenticated()
                 )
+                .headers(headers ->
+                        headers.frameOptions(frame -> frame.sameOrigin())  // Cho H2 console
+                )
+                // JWT Authentication Filter
                 .addFilterBefore(
                         jwtFilter,
                         UsernamePasswordAuthenticationFilter.class
+                )
+                // Dynamic Authorization Filter
+                .addFilterAfter(
+                        authorizationFilter,
+                        JwtFilter.class
                 );
 
         return http.build();

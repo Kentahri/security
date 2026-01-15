@@ -45,7 +45,6 @@ public class AuthController {
         this.tokenBlacklistService = tokenBlacklistService;
     }
 
-    // ---------------- REGISTER ----------------
     @PostMapping("/register")
     public String register(@RequestBody RegisterRequest request) {
 
@@ -53,9 +52,9 @@ public class AuthController {
             throw new RuntimeException("Username already exists");
         }
 
-        Role userRole = roleRepository.findByName("ROLE_USER")
+        Role userRole = roleRepository.findByName("ROLE_VIEWER")
                 .orElseThrow(() ->
-                        new RuntimeException("ROLE_USER not found")
+                        new RuntimeException("ROLE_VIEWER not found")
                 );
 
         User user = new User();
@@ -69,7 +68,6 @@ public class AuthController {
         return "Register success";
     }
 
-    // ---------------- LOGIN ----------------
     @PostMapping("/login")
     public String login(
             @RequestParam String username,
@@ -94,5 +92,4 @@ public class AuthController {
         }
         return "Logout success";
     }
-
 }
