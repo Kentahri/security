@@ -1,6 +1,7 @@
 package vt.security.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -86,13 +87,18 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
-    public String logout(HttpServletRequest request) {
+    public ResponseEntity<?> logout(HttpServletRequest request) {
+
         String authHeader = request.getHeader("Authorization");
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            String token = authHeader.substring(7);
-            tokenBlacklistService.blacklist(token);
+
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.badRequest().body("No token");
         }
-        return "Logout success";
+
+        String token = authHeader.substring(7);
+        tokenBlacklistService.blacklist(token);
+
+        return ResponseEntity.ok("Logout success");
     }
 
 }
