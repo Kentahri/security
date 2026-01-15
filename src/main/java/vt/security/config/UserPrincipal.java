@@ -23,6 +23,12 @@ public class UserPrincipal implements UserDetails {
         this.authorities = authorities;
     }
 
+    public boolean hasRole(String role) {
+        return authorities.stream()
+                .anyMatch(a -> a.getAuthority().equals(role));
+    }
+
+
     public Long getId() {
         return id;
     }

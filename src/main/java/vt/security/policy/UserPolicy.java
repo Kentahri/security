@@ -4,24 +4,24 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 import vt.security.config.UserPrincipal;
 
-@Component
+@Component("userPolicy")
 public class UserPolicy {
 
-    public boolean canUpdate(Long targetUserId, Authentication authentication) {
+    public boolean canUpdate(
+            Authentication authentication,
+            Long targetUserId
+    ) {
 
-        Object principal = authentication.getPrincipal();
-        if (!(principal instanceof UserPrincipal currentUser)) {
+        if (!(authentication.getPrincipal() instanceof UserPrincipal subject)) {
             return false;
         }
 
-        boolean isAdmin = authentication.getAuthorities().stream()
+        boolean isAdmin = subject.getAuthorities().stream()
                 .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
 
-        if (isAdmin) {
-            return true;
-        }
+        if (isAdmin) return true;
 
-        return currentUser.getId().equals(targetUserId);
+        return subject.getId().equals(targetUserId);
     }
-
 }
+
